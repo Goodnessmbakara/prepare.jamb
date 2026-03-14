@@ -1,0 +1,18 @@
+packages:
+  "framer-motion": "For fluid page transitions, expanding sections, and micro-interactions"
+  "date-fns": "For formatting timestamps and quiz durations easily"
+  "clsx": "For conditional class merging in beautiful components"
+  "tailwind-merge": "For resolving tailwind class conflicts"
+
+images:
+  - path: "artifacts/jamb-prep/public/images/hero-bg.png"
+    description: "Abstract academic background with subtle geometric shapes, stylized books, and soft light leaks in deep Nigerian green and rich blue tones, clean minimal modern aesthetic"
+    aspect_ratio: "16:9"
+  - path: "artifacts/jamb-prep/public/images/logo.png"
+    description: "Modern premium logo mark for a Nigerian exam preparation app, featuring an abstract eagle and open book integrated in vibrant green and deep blue on a transparent background"
+    aspect_ratio: "1:1"
+
+notes:
+  - "App uses API client hooks from @workspace/api-client-react as per implementation notes"
+  - "Wouter is used for routing"
+  - "Framer motion handles the complex layout animations for the quiz and tab views"

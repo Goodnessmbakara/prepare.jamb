@@ -6,6 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
+export interface Note {
+  id: string;
+  subjectId: string;
+  title: string;
+  content: string;
+  topic: string;
+  order: number;
 }
