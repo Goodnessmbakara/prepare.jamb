@@ -1,0 +1,28 @@
+packages:
+  "framer-motion": "For page transitions, smooth scroll animations, and interactive component states"
+  "clsx": "For merging tailwind classes conditionally"
+  "tailwind-merge": "For resolving tailwind class conflicts"
+  "@radix-ui/react-progress": "For accessible progress bars in the subject tracking"
+
+images:
+  - path: "artifacts/jamb-syllabus/public/images/hero-bg.png"
+    description: "Abstract vibrant mesh gradient background featuring rich Nigerian green (emerald) and warm gold accents, with subtle geometric shapes hinting at academic subjects (math symbols, cells, atoms, books) faded into the background. Modern, soft studio lighting, ultra high quality."
+    aspect_ratio: "16:9"
+  - path: "artifacts/jamb-syllabus/public/images/pattern-english.png"
+    description: "Abstract soft wave pattern in deep blue and indigo hues, resembling ink flowing on paper or sound waves, elegant and minimal."
+    aspect_ratio: "16:9"
+  - path: "artifacts/jamb-syllabus/public/images/pattern-biology.png"
+    description: "Abstract organic cellular pattern in lush emerald and forest green hues, macro photography style depth of field, elegant and microscopic."
+    aspect_ratio: "16:9"
+  - path: "artifacts/jamb-syllabus/public/images/pattern-chemistry.png"
+    description: "Abstract geometric crystal lattice pattern in vibrant orange and warm red hues, sharp and modern molecular structure."
+    aspect_ratio: "16:9"
+  - path: "artifacts/jamb-syllabus/public/images/pattern-physics.png"
+    description: "Abstract glowing quantum field and magnetic line pattern in deep purple and violet hues, futuristic and energetic."
+    aspect_ratio: "16:9"
+
+notes:
+  - This is a frontend-only reference application.
+  - All syllabus data is hardcoded inline.
+  - Progress tracking uses localStorage to persist which topics a student has marked as 'Understood'.
+  - Using wouter for client-side routing.
