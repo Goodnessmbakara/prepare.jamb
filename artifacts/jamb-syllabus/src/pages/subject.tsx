@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useRoute } from 'wouter';
+import { useRoute, Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { Layout } from '@/components/layout';
 import { SYLLABUS_DATA, SubjectId } from '@/data/syllabus';
