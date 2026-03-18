@@ -270,39 +270,47 @@ export default function QuizPage() {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between py-6 mt-auto gap-4">
-        <Button 
-          variant="outline" 
-          onClick={() => setCurrentIndex(c => Math.max(0, c - 1))}
-          disabled={currentIndex === 0}
-        >
-          <ArrowLeft className="w-5 h-5" /> Previous
-        </Button>
-
-        <Button
-          variant="outline"
+      <div className="sticky bottom-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 py-4 mt-auto -mx-4 px-4 md:-mx-8 md:px-8">
+        {/* Submit bar — always visible */}
+        <button
           onClick={() => setShowConfirm(true)}
           disabled={isSaving}
-          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+          className={cn(
+            "w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-base mb-3 transition-all",
+            answeredCount === questions.length
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90"
+              : "bg-accent text-accent-foreground shadow-lg shadow-accent/20 hover:opacity-90"
+          )}
         >
           <Send className="w-4 h-4" />
-          Submit ({answeredCount}/{questions.length})
-        </Button>
+          {answeredCount === questions.length
+            ? "Submit Exam"
+            : `Submit Now — ${answeredCount}/${questions.length} Answered`}
+        </button>
 
-        {currentIndex < questions.length - 1 && (
-          <Button onClick={() => setCurrentIndex(c => Math.min(questions.length - 1, c + 1))}>
-            Next <ArrowRight className="w-5 h-5" />
-          </Button>
-        )}
-        {currentIndex === questions.length - 1 && (
+        {/* Previous / Next navigation row */}
+        <div className="flex items-center justify-between gap-3">
           <Button
-            onClick={submitQuiz}
-            disabled={isSaving}
-            className="bg-accent text-accent-foreground shadow-accent/20 hover:shadow-accent/40"
+            variant="outline"
+            onClick={() => setCurrentIndex(c => Math.max(0, c - 1))}
+            disabled={currentIndex === 0}
+            className="flex-1"
           >
-            {isSaving ? "Submitting..." : "Finish"} <CheckCircle2 className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" /> Previous
           </Button>
-        )}
+
+          <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+            {currentIndex + 1} / {questions.length}
+          </span>
+
+          <Button
+            onClick={() => setCurrentIndex(c => Math.min(questions.length - 1, c + 1))}
+            disabled={currentIndex === questions.length - 1}
+            className="flex-1"
+          >
+            Next <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Confirm Early Submit Dialog */}
