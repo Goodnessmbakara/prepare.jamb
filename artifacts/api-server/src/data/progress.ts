@@ -1,18 +1,34 @@
 import { englishQuestions } from "./english-questions.js";
+import { englishQuestions2 } from "./english-questions-2.js";
 import { biologyQuestions } from "./biology-questions.js";
+import { biologyQuestions2 } from "./biology-questions-2.js";
 import { chemistryQuestions } from "./chemistry-questions.js";
+import { chemistryQuestions2 } from "./chemistry-questions-2.js";
 import { physicsQuestions } from "./physics-questions.js";
+import { physicsQuestions2 } from "./physics-questions-2.js";
 import { notes } from "./notes.js";
 import { subjects } from "./subjects.js";
 
-export { englishQuestions, biologyQuestions, chemistryQuestions, physicsQuestions, notes, subjects };
+export const allEnglishQuestions = [...englishQuestions, ...englishQuestions2];
+export const allBiologyQuestions = [...biologyQuestions, ...biologyQuestions2];
+export const allChemistryQuestions = [...chemistryQuestions, ...chemistryQuestions2];
+export const allPhysicsQuestions = [...physicsQuestions, ...physicsQuestions2];
+
+export { notes, subjects };
 
 export const allQuestions = [
-  ...englishQuestions,
-  ...biologyQuestions,
-  ...chemistryQuestions,
-  ...physicsQuestions,
+  ...allEnglishQuestions,
+  ...allBiologyQuestions,
+  ...allChemistryQuestions,
+  ...allPhysicsQuestions,
 ];
+
+export {
+  englishQuestions, englishQuestions2,
+  biologyQuestions, biologyQuestions2,
+  chemistryQuestions, chemistryQuestions2,
+  physicsQuestions, physicsQuestions2,
+};
 
 // In-memory progress store (per session)
 export const progressStore = {
