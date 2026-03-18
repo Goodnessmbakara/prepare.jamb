@@ -3,7 +3,7 @@ import { useParams, useLocation } from "wouter";
 import { useGetQuestions, useGetSubjects, useSaveProgress } from "@workspace/api-client-react";
 import { Button, Card, LoadingSpinner } from "@/components/ui-elements";
 import { formatTime, cn } from "@/lib/utils";
-import { Timer, AlertTriangle, ArrowRight, ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
+import { Timer, AlertTriangle, ArrowRight, ArrowLeft, CheckCircle2, XCircle, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -35,6 +35,7 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -269,7 +270,7 @@ export default function QuizPage() {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between py-6 mt-auto">
+      <div className="flex items-center justify-between py-6 mt-auto gap-4">
         <Button 
           variant="outline" 
           onClick={() => setCurrentIndex(c => Math.max(0, c - 1))}
@@ -277,21 +278,81 @@ export default function QuizPage() {
         >
           <ArrowLeft className="w-5 h-5" /> Previous
         </Button>
-        
-        {currentIndex === questions.length - 1 ? (
-          <Button 
-            onClick={submitQuiz} 
+
+        <Button
+          variant="outline"
+          onClick={() => setShowConfirm(true)}
+          disabled={isSaving}
+          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+        >
+          <Send className="w-4 h-4" />
+          Submit ({answeredCount}/{questions.length})
+        </Button>
+
+        {currentIndex < questions.length - 1 && (
+          <Button onClick={() => setCurrentIndex(c => Math.min(questions.length - 1, c + 1))}>
+            Next <ArrowRight className="w-5 h-5" />
+          </Button>
+        )}
+        {currentIndex === questions.length - 1 && (
+          <Button
+            onClick={submitQuiz}
             disabled={isSaving}
             className="bg-accent text-accent-foreground shadow-accent/20 hover:shadow-accent/40"
           >
-            {isSaving ? "Submitting..." : "Submit Exam"} <CheckCircle2 className="w-5 h-5" />
-          </Button>
-        ) : (
-          <Button onClick={() => setCurrentIndex(c => Math.min(questions.length - 1, c + 1))}>
-            Next Question <ArrowRight className="w-5 h-5" />
+            {isSaving ? "Submitting..." : "Finish"} <CheckCircle2 className="w-5 h-5" />
           </Button>
         )}
       </div>
+
+      {/* Confirm Early Submit Dialog */}
+      <AnimatePresence>
+        {showConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8 text-orange-500" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-center mb-2">Submit Early?</h3>
+              {answeredCount < questions.length ? (
+                <p className="text-muted-foreground text-center mb-6">
+                  You have answered <span className="font-bold text-foreground">{answeredCount}</span> of <span className="font-bold text-foreground">{questions.length}</span> questions.{" "}
+                  <span className="text-orange-500 font-medium">{questions.length - answeredCount} unanswered</span> question{questions.length - answeredCount !== 1 ? "s" : ""} will be marked incorrect.
+                </p>
+              ) : (
+                <p className="text-muted-foreground text-center mb-6">
+                  All {questions.length} questions answered. Ready to submit?
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1" onClick={() => setShowConfirm(false)}>
+                  Keep Going
+                </Button>
+                <Button
+                  className="flex-1 bg-accent text-accent-foreground"
+                  disabled={isSaving}
+                  onClick={() => { setShowConfirm(false); submitQuiz(); }}
+                >
+                  {isSaving ? "Submitting..." : "Yes, Submit"}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
