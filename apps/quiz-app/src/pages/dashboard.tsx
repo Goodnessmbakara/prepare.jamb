@@ -2,9 +2,8 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Book, BrainCircuit, FlaskConical, Microscope, Calculator, Target, Trophy, Clock } from "lucide-react";
 import { Card, LoadingSpinner } from "@/components/ui-elements";
-import { subjects } from "@/data/subjects";
-import { allQuestions } from "@/data/progress";
 import { useState, useEffect } from "react";
+import { apiClient, type Subject, type Question } from "@/lib/api-client";
 
 // Map string icons to actual components
 const IconMap: Record<string, React.ElementType> = {
@@ -14,37 +13,56 @@ const IconMap: Record<string, React.ElementType> = {
   calculator: Calculator,
 };
 
-// Add question counts to subjects
-const subjectsWithCounts = subjects.map((s) => ({
-  ...s,
-  totalQuestions: allQuestions.filter((q) => q.subjectId === s.id).length,
-}));
-
 export default function Dashboard() {
   const [progress, setProgress] = useState<any>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load progress from localStorage
-    const stored = localStorage.getItem('jamb-progress');
-    if (stored) {
-      setProgress(JSON.parse(stored));
-    } else {
-      setProgress({
-        totalQuizzesTaken: 0,
-        totalCorrect: 0,
-        totalAttempted: 0,
-        subjectScores: {},
-        recentResults: [],
-      });
+    async function loadData() {
+      try {
+        // Load subjects and questions from API
+        const [subjectsData, questionsData, progressData] = await Promise.all([
+          apiClient.getSubjects(),
+          apiClient.getQuestions(),
+          apiClient.getProgress(),
+        ]);
+
+        setSubjects(subjectsData);
+        setQuestions(questionsData);
+        setProgress(progressData);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        // Fallback to empty state
+        setProgress({
+          totalQuestions: 0,
+          correctAnswers: 0,
+          subjectScores: {},
+          quizHistory: [],
+        });
+        setSubjects([]);
+        setQuestions([]);
+      } finally {
+        setLoading(false);
+      }
     }
+
+    loadData();
   }, []);
 
-  if (!progress) {
+  if (loading || !progress) {
     return <LoadingSpinner className="min-h-[60vh]" />;
   }
 
-  const accuracy = progress.totalAttempted
-    ? Math.round((progress.totalCorrect / progress.totalAttempted) * 100)
+  // Add question counts to subjects
+  const subjectsWithCounts = subjects.map((s) => ({
+    ...s,
+    totalQuestions: questions.filter((q) => q.subjectId === s.id).length,
+  }));
+
+  const accuracy = progress.totalQuestions
+    ? Math.round((progress.correctAnswers / progress.totalQuestions) * 100)
     : 0;
 
   return (
@@ -90,7 +108,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-muted-foreground font-medium text-sm">Quizzes Taken</p>
-                <p className="text-3xl font-bold font-display">{progress?.totalQuizzesTaken || 0}</p>
+                <p className="text-3xl font-bold font-display">{progress?.quizHistory?.length || 0}</p>
               </div>
             </Card>
           </motion.div>

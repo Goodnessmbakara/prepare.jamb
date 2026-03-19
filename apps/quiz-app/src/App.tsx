@@ -7,6 +7,7 @@ import { Layout } from "@/components/layout";
 import Dashboard from "@/pages/dashboard";
 import SubjectPage from "@/pages/subject";
 import QuizPage from "@/pages/quiz";
+import Progress from "@/pages/progress";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/progress" component={Progress} />
         <Route path="/subject/:id" component={SubjectPage} />
         <Route path="/quiz/:id" component={QuizPage} />
         <Route component={NotFound} />
