@@ -11,7 +11,9 @@
       "Bash(PORT=5174 BASE_PATH=/ pnpm:*)",
       "Bash(vercel deploy:*)",
       "Bash(git rm:*)",
-      "Bash(npx vercel deploy:*)"
+      "Bash(npx vercel deploy:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ]
   }
 }

@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useParams, Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedTab, Button, Card, LoadingSpinner } from "@/components/ui-elements";
-import { BookOpen, CheckCircle2, ChevronDown, ChevronRight, Play, AlertCircle } from "lucide-react";
+import { StudyNotesViewer } from "@/components/study-notes-viewer";
+import { CheckCircle2, ChevronRight, Play, AlertCircle, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
 import { subjects } from "@/data/subjects";
-import { notes } from "@/data/notes";
 import { allQuestions } from "@/data/progress";
+import * as NotesData from "@/data/notes";
 
 const TABS = ["Study Notes", "Practice Questions", "Take Quiz"];
 const CATEGORIES = [
@@ -22,14 +22,31 @@ export default function SubjectPage() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [activeCategory, setActiveCategory] = useState<typeof CATEGORIES[number]["id"]>("all");
-  const [expandedNote, setExpandedNote] = useState<string | null>(null);
   const [revealedAnswers, setRevealedAnswers] = useState<Set<string>>(new Set());
 
   // Get data from local imports
   const subject = subjects.find(s => s.id === id);
-  const subjectNotes = notes
-    .filter((n) => n.subjectId === id)
-    .sort((a, b) => a.order - b.order);
+
+  // Get notes for this subject from the appropriate notes collection
+  const getSubjectNotes = () => {
+    const notesMap: Record<string, any> = {
+      'english': NotesData.englishNotes,
+      'mathematics': NotesData.mathematicsNotes,
+      'physics': NotesData.physicsNotes,
+      'chemistry': NotesData.chemistryNotes,
+      'biology': NotesData.biologyNotes,
+      'literature': NotesData.literatureNotes,
+      'government': NotesData.governmentNotes,
+      'economics': NotesData.economicsNotes,
+      'commerce': NotesData.commerceNotes,
+      'accounting': NotesData.accountingNotes,
+      'crk': NotesData.crkNotes,
+      'computer-studies': NotesData.computerStudiesNotes,
+    };
+    return notesMap[id || ''] || [];
+  };
+
+  const subjectNotes = getSubjectNotes();
 
   let filteredQuestions = allQuestions.filter((q) => q.subjectId === id);
   if (activeCategory !== "all") {
@@ -81,60 +98,7 @@ export default function SubjectPage() {
         >
           {/* TAB: STUDY NOTES */}
           {activeTab === "Study Notes" && (
-            <div className="space-y-6">
-              {isLoadingNotes ? (
-                <LoadingSpinner />
-              ) : subjectNotes && subjectNotes.length > 0 ? (
-                <div className="grid gap-4">
-                  {subjectNotes.map((note) => (
-                    <Card 
-                      key={note.id} 
-                      className="p-0 overflow-hidden border-2 transition-colors hover:border-primary/20"
-                    >
-                      <button
-                        className="w-full px-6 py-5 flex items-center justify-between bg-white text-left"
-                        onClick={() => setExpandedNote(expandedNote === note.id ? null : note.id)}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
-                            expandedNote === note.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
-                          )}>
-                            <BookOpen className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <p className="text-sm text-primary font-bold tracking-wider uppercase mb-1">{note.topic}</p>
-                            <h3 className="text-lg font-bold text-foreground">{note.title}</h3>
-                          </div>
-                        </div>
-                        <ChevronDown className={cn("w-6 h-6 text-muted-foreground transition-transform duration-300", expandedNote === note.id && "rotate-180")} />
-                      </button>
-                      
-                      <AnimatePresence>
-                        {expandedNote === note.id && (
-                          <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: "auto" }}
-                            exit={{ height: 0 }}
-                            className="overflow-hidden bg-muted/20 border-t border-border"
-                          >
-                            <div className="p-6 md:p-8 prose prose-sm prose-green max-w-none text-foreground/80">
-                              <ReactMarkdown>{note.content}</ReactMarkdown>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="text-center py-16">
-                  <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-xl font-bold">No notes available yet</h3>
-                  <p className="text-muted-foreground">Check back later for updated syllabus notes.</p>
-                </Card>
-              )}
-            </div>
+            <StudyNotesViewer notes={subjectNotes} subjectId={id || ''} />
           )}
 
           {/* TAB: PRACTICE QUESTIONS */}
