@@ -6,7 +6,6 @@ import { chemistryQuestions } from "./chemistry-questions.js";
 import { chemistryQuestions2 } from "./chemistry-questions-2.js";
 import { physicsQuestions } from "./physics-questions.js";
 import { physicsQuestions2 } from "./physics-questions-2.js";
-import { notes } from "./notes.js";
 import { subjects } from "./subjects.js";
 
 export const allEnglishQuestions = [...englishQuestions, ...englishQuestions2];
@@ -14,7 +13,7 @@ export const allBiologyQuestions = [...biologyQuestions, ...biologyQuestions2];
 export const allChemistryQuestions = [...chemistryQuestions, ...chemistryQuestions2];
 export const allPhysicsQuestions = [...physicsQuestions, ...physicsQuestions2];
 
-export { notes, subjects };
+export { subjects };
 
 export const allQuestions = [
   ...allEnglishQuestions,
