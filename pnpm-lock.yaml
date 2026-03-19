@@ -164,7 +164,7 @@ importers:
         specifier: ~5.9.2
         version: 5.9.3
 
-  artifacts/api-server:
+  apps/api-server:
     dependencies:
       '@workspace/api-zod':
         specifier: workspace:*
@@ -204,7 +204,7 @@ importers:
         specifier: 'catalog:'
         version: 4.21.0
 
-  artifacts/jamb-prep:
+  apps/jamb-prep:
     dependencies:
       react-markdown:
         specifier: ^10.1.0
@@ -391,7 +391,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
 
-  artifacts/jamb-syllabus:
+  apps/jamb-syllabus:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0
@@ -574,7 +574,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
 
-  artifacts/mockup-sandbox:
+  apps/mockup-sandbox:
     devDependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0
