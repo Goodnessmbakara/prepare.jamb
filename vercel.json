@@ -1,5 +1,11 @@
 {
   "buildCommand": "cd apps/quiz-app && pnpm run build",
   "outputDirectory": "apps/quiz-app/dist/public",
-  "installCommand": "npm install -g pnpm@10.14.0 && pnpm install"
+  "installCommand": "npm install -g pnpm@10.14.0 && pnpm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
