@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useParams, Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGetSubjects, useGetNotes, useGetQuestions } from "@workspace/api-client-react";
 import { AnimatedTab, Button, Card, LoadingSpinner } from "@/components/ui-elements";
 import { BookOpen, CheckCircle2, ChevronDown, ChevronRight, Play, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import { subjects } from "@/data/subjects";
+import { notes } from "@/data/notes";
+import { allQuestions } from "@/data/progress";
 
 const TABS = ["Study Notes", "Practice Questions", "Take Quiz"];
 const CATEGORIES = [
@@ -23,14 +25,19 @@ export default function SubjectPage() {
   const [expandedNote, setExpandedNote] = useState<string | null>(null);
   const [revealedAnswers, setRevealedAnswers] = useState<Set<string>>(new Set());
 
-  // Data fetching
-  const { data: subjects } = useGetSubjects();
-  const { data: notes, isLoading: isLoadingNotes } = useGetNotes(id || "");
-  const { data: questions, isLoading: isLoadingQuestions } = useGetQuestions(id || "", { 
-    category: activeCategory 
-  });
+  // Get data from local imports
+  const subject = subjects.find(s => s.id === id);
+  const subjectNotes = notes
+    .filter((n) => n.subjectId === id)
+    .sort((a, b) => a.order - b.order);
 
-  const subject = subjects?.find(s => s.id === id);
+  let filteredQuestions = allQuestions.filter((q) => q.subjectId === id);
+  if (activeCategory !== "all") {
+    filteredQuestions = filteredQuestions.filter((q) => q.category === activeCategory);
+  }
+
+  const isLoadingNotes = false;
+  const isLoadingQuestions = false;
 
   if (!subject) return <LoadingSpinner />;
 
@@ -77,9 +84,9 @@ export default function SubjectPage() {
             <div className="space-y-6">
               {isLoadingNotes ? (
                 <LoadingSpinner />
-              ) : notes && notes.length > 0 ? (
+              ) : subjectNotes && subjectNotes.length > 0 ? (
                 <div className="grid gap-4">
-                  {notes.sort((a,b) => a.order - b.order).map((note) => (
+                  {subjectNotes.map((note) => (
                     <Card 
                       key={note.id} 
                       className="p-0 overflow-hidden border-2 transition-colors hover:border-primary/20"
@@ -153,9 +160,9 @@ export default function SubjectPage() {
 
               {isLoadingQuestions ? (
                 <LoadingSpinner />
-              ) : questions && questions.length > 0 ? (
+              ) : filteredQuestions && filteredQuestions.length > 0 ? (
                 <div className="space-y-6">
-                  {questions.map((q, idx) => {
+                  {filteredQuestions.map((q, idx) => {
                     const isRevealed = revealedAnswers.has(q.id);
                     return (
                       <Card key={q.id} className="relative p-6 md:p-8">

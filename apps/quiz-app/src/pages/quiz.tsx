@@ -1,32 +1,29 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { useGetQuestions, useGetSubjects, useSaveProgress } from "@workspace/api-client-react";
 import { Button, Card, LoadingSpinner } from "@/components/ui-elements";
 import { formatTime, cn } from "@/lib/utils";
 import { Timer, AlertTriangle, ArrowRight, ArrowLeft, CheckCircle2, XCircle, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
+import { subjects } from "@/data/subjects";
+import { allQuestions } from "@/data/progress";
 
 const QUIZ_DURATION = 30 * 60; // 30 minutes in seconds
 
 export default function QuizPage() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
 
-  // Data fetching
-  const { data: subjects } = useGetSubjects();
-  const { data: questions, isLoading } = useGetQuestions(id || "", { limit: 40 });
-  const { mutate: saveProgress, isPending: isSaving } = useSaveProgress({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate progress so dashboard updates
-        queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
-      }
-    }
-  });
+  // Get data from local imports
+  const subject = subjects.find(s => s.id === id);
 
-  const subject = subjects?.find(s => s.id === id);
+  // Get random 40 questions for this subject
+  const subjectQuestions = allQuestions.filter((q) => q.subjectId === id);
+  const questions = [...subjectQuestions]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 40);
+
+  const isLoading = false;
+  const isSaving = false;
 
   // Quiz State
   const [hasStarted, setHasStarted] = useState(false);
@@ -74,15 +71,31 @@ export default function QuizPage() {
     const finalScore = Math.round((correctCount / questions.length) * 100);
     setScore(finalScore);
 
-    saveProgress({
-      data: {
+    // Save progress to localStorage
+    const storedProgress = localStorage.getItem('jamb-progress');
+    const progress = storedProgress ? JSON.parse(storedProgress) : {
+      totalQuizzesTaken: 0,
+      totalCorrect: 0,
+      totalAttempted: 0,
+      subjectScores: {},
+      recentResults: [],
+    };
+
+    progress.totalQuizzesTaken += 1;
+    progress.totalCorrect += correctCount;
+    progress.totalAttempted += questions.length;
+    progress.subjectScores[id || ""] = finalScore;
+    progress.recentResults = [
+      {
         subjectId: id || "",
         score: finalScore,
         total: questions.length,
         timestamp: new Date().toISOString(),
-        category: "mock"
-      }
-    });
+      },
+      ...progress.recentResults.slice(0, 9),
+    ];
+
+    localStorage.setItem('jamb-progress', JSON.stringify(progress));
   };
 
   if (isLoading || !subject || !questions) {

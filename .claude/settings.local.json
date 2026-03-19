@@ -5,7 +5,10 @@
       "Bash(pnpm run build:*)",
       "Bash(pnpm add:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(PORT=8080 pnpm --filter api-server dev:*)",
+      "Bash(PORT=5173 BASE_PATH=/ pnpm:*)",
+      "Bash(PORT=5174 BASE_PATH=/ pnpm:*)"
     ]
   }
 }

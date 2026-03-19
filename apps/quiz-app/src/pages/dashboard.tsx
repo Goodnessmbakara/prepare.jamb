@@ -1,8 +1,10 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { useGetSubjects, useGetProgress } from "@workspace/api-client-react";
 import { Book, BrainCircuit, FlaskConical, Microscope, Calculator, Target, Trophy, Clock } from "lucide-react";
 import { Card, LoadingSpinner } from "@/components/ui-elements";
+import { subjects } from "@/data/subjects";
+import { allQuestions } from "@/data/progress";
+import { useState, useEffect } from "react";
 
 // Map string icons to actual components
 const IconMap: Record<string, React.ElementType> = {
@@ -12,16 +14,37 @@ const IconMap: Record<string, React.ElementType> = {
   calculator: Calculator,
 };
 
-export default function Dashboard() {
-  const { data: subjects, isLoading: isLoadingSubjects } = useGetSubjects();
-  const { data: progress, isLoading: isLoadingProgress } = useGetProgress();
+// Add question counts to subjects
+const subjectsWithCounts = subjects.map((s) => ({
+  ...s,
+  totalQuestions: allQuestions.filter((q) => q.subjectId === s.id).length,
+}));
 
-  if (isLoadingSubjects || isLoadingProgress) {
+export default function Dashboard() {
+  const [progress, setProgress] = useState<any>(null);
+
+  useEffect(() => {
+    // Load progress from localStorage
+    const stored = localStorage.getItem('jamb-progress');
+    if (stored) {
+      setProgress(JSON.parse(stored));
+    } else {
+      setProgress({
+        totalQuizzesTaken: 0,
+        totalCorrect: 0,
+        totalAttempted: 0,
+        subjectScores: {},
+        recentResults: [],
+      });
+    }
+  }, []);
+
+  if (!progress) {
     return <LoadingSpinner className="min-h-[60vh]" />;
   }
 
-  const accuracy = progress?.totalAttempted 
-    ? Math.round((progress.totalCorrect / progress.totalAttempted) * 100) 
+  const accuracy = progress.totalAttempted
+    ? Math.round((progress.totalCorrect / progress.totalAttempted) * 100)
     : 0;
 
   return (
@@ -102,7 +125,7 @@ export default function Dashboard() {
       <div>
         <h2 className="text-2xl font-bold mb-6">Select a Subject</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {subjects?.map((subject, idx) => {
+          {subjectsWithCounts.map((subject, idx) => {
             const Icon = IconMap[subject.icon] || Book;
             const score = progress?.subjectScores?.[subject.id] || 0;
             
