@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd apps/quiz-app && npm run build",
+  "outputDirectory": "apps/quiz-app/dist/public",
+  "installCommand": "npm install -g pnpm && pnpm install"
+}
