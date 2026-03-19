@@ -1,7 +1,5 @@
 packages:
   - apps/*
-  - lib/*
-  - lib/integrations/*
   - scripts
 
 autoInstallPeers: false
