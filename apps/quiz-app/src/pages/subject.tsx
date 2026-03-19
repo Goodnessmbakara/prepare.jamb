@@ -41,7 +41,7 @@ export default function SubjectPage() {
       'commerce': NotesData.commerceNotes,
       'accounting': NotesData.accountingNotes,
       'crk': NotesData.crkNotes,
-      'computer-studies': NotesData.computerStudiesNotes,
+      'computer': NotesData.computerStudiesNotes,
     };
     return notesMap[id || ''] || [];
   };
