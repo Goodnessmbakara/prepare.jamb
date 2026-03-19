@@ -7,7 +7,7 @@ import { CheckCircle2, ChevronRight, Play, AlertCircle, BookOpen } from "lucide-
 import { cn } from "@/lib/utils";
 import { subjects } from "@/data/subjects";
 import { allQuestions } from "@/data/progress";
-import * as NotesData from "@/data/notes";
+import * as NotesData from "@/data/notes/index";
 
 const TABS = ["Study Notes", "Practice Questions", "Take Quiz"];
 const CATEGORIES = [
