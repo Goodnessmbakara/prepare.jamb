@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { Button, Card, LoadingSpinner } from "@/components/ui-elements";
 import { formatTime, cn } from "@/lib/utils";
@@ -16,11 +16,13 @@ export default function QuizPage() {
   // Get data from local imports
   const subject = subjects.find(s => s.id === id);
 
-  // Get random 40 questions for this subject
-  const subjectQuestions = allQuestions.filter((q) => q.subjectId === id);
-  const questions = [...subjectQuestions]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 40);
+  // Get random 40 questions for this subject (memoized to prevent re-shuffling on every render)
+  const questions = useMemo(() => {
+    const subjectQuestions = allQuestions.filter((q) => q.subjectId === id);
+    return [...subjectQuestions]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 40);
+  }, [id]);
 
   const isLoading = false;
   const isSaving = false;
@@ -256,11 +258,12 @@ export default function QuizPage() {
                   return (
                     <button
                       key={oIdx}
+                      type="button"
                       onClick={() => handleSelectOption(question.id, oIdx)}
                       className={cn(
                         "w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 flex items-center gap-4 group",
-                        isSelected 
-                          ? "border-primary bg-primary/5 shadow-md shadow-primary/10" 
+                        isSelected
+                          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
                           : "border-border bg-white hover:border-primary/40 hover:bg-muted/30"
                       )}
                     >
